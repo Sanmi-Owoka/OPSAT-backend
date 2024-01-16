@@ -119,3 +119,33 @@ class ForgotPasswordSerializer(serializers.ModelSerializer):
             "new_password",
             "confirm_password",
         ]
+
+
+class UserDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "first_name",
+            "last_name",
+            "email",
+            "phone_number",
+            "address",
+            "date_joined",
+            "username",
+            "city",
+            "country",
+        ]
+
+        read_only_fields = [
+            "id",
+            "first_name",
+            "last_name",
+            "email",
+            "phone_number",
+            "address",
+            "date_joined",
+            "username",
+            "city",
+            "country",
+        ]

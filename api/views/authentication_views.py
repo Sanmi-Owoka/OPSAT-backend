@@ -17,7 +17,8 @@ from ..serializers.authentication_serializer import (
     RegisterUserSerializer,
     LoginUserSerializer,
     ChangePasswordSerializer,
-    ForgotPasswordSerializer
+    ForgotPasswordSerializer,
+    UserDetailSerializer
 )
 
 from api.functools import (
@@ -36,6 +37,21 @@ class AuthenticationViewSet(GenericViewSet):
 
     def get_queryset(self):
         return User.objects.filter(id=self.request.user.id)
+
+    @action(methods=["GET"], detail=False, url_name="user_details", serializer_class=UserDetailSerializer)
+    def get_user_details(self, request):
+        try:
+            user = request.user
+            response = self.get_serializer(user)
+            return Response(
+                convert_to_success_message_serialized_data(response.data),
+                status=status.HTTP_200_OK
+            )
+        except Exception as err:
+            return Response(
+                convert_to_error_message(f"{err}"),
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
     @action(methods=["POST"], detail=False, url_name="Register User", permission_classes=[AllowAny])
     def register_user(self, request):
