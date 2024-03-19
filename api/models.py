@@ -6,7 +6,7 @@ from django.utils import timezone
 
 
 class User(AbstractUser):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     username = models.CharField(max_length=255, null=True, unique=True)
     phone_regex = RegexValidator(
         regex=r"^\+?1?\d{9,15}$",
@@ -40,7 +40,7 @@ models.signals.pre_save.connect(set_username, sender=User)
 
 
 class PasswordHistory(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_password_history")
     password = models.CharField(max_length=128)
     created_at = models.DateTimeField(default=timezone.now)
@@ -67,3 +67,28 @@ class PasswordReset(models.Model):
             return True
         else:
             return False
+
+
+class ShipmentUserDetails(models.Model):
+    country = models.CharField(max_length=255, null=True, blank=True)
+    contact_name = models.CharField(max_length=255, null=True, blank=True)
+    fullname = models.CharField(max_length=255, null=True, blank=True)
+    phone_regex = RegexValidator(
+        regex=r"^\+?1?\d{9,15}$",
+        message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.",
+    )
+    phone_number = models.CharField(
+        validators=[phone_regex], max_length=17, null=True, blank=True
+    )
+    address = models.CharField(max_length=255, null=True, blank=True)
+    email = models.EmailField(max_length=255, null=True, blank=True)
+
+
+class ParcelInformation(models.Model):
+    parcel_type = models.CharField(max_length=255, null=True, blank=True)
+    weight = models.PositiveIntegerField(null=True, blank=True)
+    height = models.PositiveIntegerField(null=True, blank=True)
+    width = models.PositiveIntegerField(null=True, blank=True)
+    length = models.PositiveIntegerField(null=True, blank=True)
+    value = models.PositiveIntegerField(null=True, blank=True)
+    description_of_parcel = models.TextField()
